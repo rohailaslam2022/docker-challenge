@@ -1,0 +1,66 @@
+version: '3'
+services:
+  haproxy:
+    container_name: lb
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - CERTS=purelogics.pltouchbase.com
+      - EMAIL=rohail.aslam@purelogics.net
+      - STAGING=false  # Set to false for production
+    volumes:
+      - '$PWD/data/letsencrypt:/etc/letsencrypt'
+        # - './data/haproxy.cfg:/etc/haproxy/haproxy.cfg'  # Optional, remove if managed in Dockerfile
+    networks:
+      - alyantNet
+    ports:
+      - '80:80'
+      - '443:443'
+
+  rsyslog:
+    container_name: rsyslog
+    environment:
+      - TZ=UTC
+      - ENV_VAR=121333  # Clarify purpose if needed
+    volumes:
+      - '$PWD/data/rsyslog/config:/config'
+    networks:
+      - alyantNet
+    ports:
+      - '514:514'
+    image: 'rsyslog/syslog_appliance_alpine'
+
+  back01:
+    container_name: lorem-ipsum-01
+    networks:
+      - alyantNet
+    image: 'nginx:latest'
+    volumes:
+      - '$PWD/web-server:/usr/share/nginx/html'
+    ports:
+      - '8081:80'
+
+  back02:
+    container_name: lorem-ipsum-02
+    networks:
+      - alyantNet
+    image: 'nginx:latest'
+    volumes:
+      - '$PWD/web-server:/usr/share/nginx/html'
+    ports:
+      - '8082:80'
+
+  back03:
+    container_name: lorem-ipsum-03
+    networks:
+      - alyantNet
+    image: 'nginx:latest'
+    volumes:
+      - '$PWD/web-server:/usr/share/nginx/html'
+    ports:
+      - '8083:80'
+
+networks:
+  alyantNet:
+    driver: bridge

@@ -1,0 +1,6 @@
+MAILTO="rohail.aslam@purelogics.net"
+SHELL=/bin/bash
+BASH_ENV=/container.env
+
+# Execute the cert-renewal script every Sunday at 01:01 AM
+1 1 * * 7  /cert-renewal-haproxy.sh >> /var/log/cert-renewal.log 2>&1
